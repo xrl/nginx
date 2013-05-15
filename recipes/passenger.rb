@@ -39,11 +39,21 @@ node.default["nginx"]["passenger"]["pool_idle_time"] = 300
 node.default["nginx"]["passenger"]["max_requests"] = 0
 node.default["nginx"]["passenger"]["gem_binary"] = nil
 
-packages = value_for_platform( ["redhat", "centos", "scientific", "amazon", "oracle"] => {
-                                 "default" => %w(ruby-devel curl-devel) },
-                               ["ubuntu", "debian"] => {
-                                 "default" => %w(ruby-dev libcurl4-gnutls-dev) } )
+unless node["nginx"]["passenger"]["headers_exist"]
+  packages = value_for_platform( ["redhat", "centos", "scientific", "amazon", "oracle"] => {
+                                   "default" => %w(ruby-devel) },
+                                 ["ubuntu", "debian"] => {
+                                   "default" => %w(ruby-dev) } )
 
+  packages.each do |devpkg|
+    package devpkg
+  end
+end
+
+packages = value_for_platform( ["redhat", "centos", "scientific", "amazon", "oracle"] => {
+                                   "default" => %w(curl-devel) },
+                                 ["ubuntu", "debian"] => {
+                                   "default" => %w(libcurl4-gnutls-dev) } )
 packages.each do |devpkg|
   package devpkg
 end
